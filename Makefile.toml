@@ -1,0 +1,138 @@
+[config]
+
+# -------------------------- generic/common tasks ---------------------------- #
+[tasks.format]
+toolchain = "nightly"
+command = "cargo"
+args = ["fmt"]
+
+[tasks.docs]
+toolchain = "stable"
+command = "cargo"
+args = ["doc"]
+
+# --------------------------------- testing ---------------------------------- #
+[tasks.test_env]
+script_runner = "@duckscript"
+script = '''
+set_env RUSTFLAGS "-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
+set_env RUSTDOCFLAGS "-Cpanic=abort"
+set_env CARGO_INCREMENTAL 0
+'''
+
+[tasks.testcov]
+command = "grcov"
+args = [
+    ".",
+    "-s", "src",
+    "--binary-path", "target/debug/",
+    "-t", "html",
+    "--branch",
+    "--ignore-not-existing",
+    "-o", "target/debug/coverage",
+]
+
+[tasks.clean_testcov]
+script_runner = "@duckscript"
+script = '''
+testcov_files = glob_array target/**/*.gcda
+for file in ${testcov_files}
+    rm ${file}
+end
+'''
+
+[tasks.build_test]
+toolchain = "nightly"
+command = "cargo"
+args = ["build"]
+dependencies = ["test_env", "format"]
+
+[tasks.run_tests]
+toolchain = "nightly"
+command = "cargo"
+args = ["test"]
+dependencies = ["test_env", "build_test"]
+
+[tasks.test]
+clear = true
+dependencies = ["clean_testcov", "run_tests", "testcov"]
+
+# -------------------------------- production -------------------------------- #
+[tasks.production_env]
+script_runner = "@duckscript"
+script = '''
+set_env RUSTFLAGS "-Copt-level=3 -Coverflow-checks=off"
+set_env CARGO_INCREMENTAL 0
+'''
+
+[tasks.production_build]
+toolchain = "stable"
+command = "cargo"
+args = ["build", "--release"]
+dependencies = ["production_env", "format", "run_tests"]
+
+[tasks.production]
+clear = true
+dependencies = ["production_env", "production_build"]
+
+# ------------------------------- benchmarking ------------------------------- #
+[tasks.bench]
+clear=true
+# TODO:
+
+# -------------------------------- publishing -------------------------------- #
+[tasks.bump_patch]
+dependencies = ["run_tests"]
+command = "cargo"
+args = ["semver", "bump", "patch"]
+
+[tasks.bump_minor]
+dependencies = ["run_tests"]
+command = "cargo"
+args = ["semver", "bump", "minor"]
+
+[tasks.bump_major]
+dependencies = ["run_tests"]
+command = "cargo"
+args = ["semver", "bump", "major"]
+
+[tasks.push_git_nobump]
+dependencies = ["run_tests"]
+script_runner = "@duckscript"
+script = '''
+exec --fail-on-error git pull
+exec --fail-on-error git push
+'''
+
+[tasks.push_git_bump]
+dependencies = ["production", "docs"]
+script_runner = "@duckscript"
+script = '''
+fn git
+    exec --fail-on-error git ${1} ${2}
+end
+
+version = cargo semver get
+git checkout latest
+git merge master
+git branch v${version}
+git checkout master
+git pull
+git push
+'''
+
+[tasks.push_crates]
+dependencies = ["push_git_bump"]
+
+[tasks.publish_patch]
+dependencies = ["bump_patch", "push_crates"]
+
+[tasks.publish_minor]
+dependencies = ["bump_minor", "push_crates"]
+
+[tasks.publish_major]
+dependencies = ["bump_major", "push_crates"]
+
+# git master branch: development
+#   -> side branch 'latest'
+#   -> release branches

@@ -1,0 +1,23 @@
+[package]
+name = "yapg"
+description = "Yet another passphrase generator (library + binary)"
+version = "0.1.0"
+authors = ["tillyboy <github.com/tillyboy>"]
+license = "MIT"
+edition = "2018"
+
+# this is currently missing important options for grcov to work properly
+# see Makefile.toml for more
+[profile.test]
+opt-level = 0
+codegen-units = 1
+overflow-checks = false
+incremental = false
+
+[dependencies]
+rand = "0.5.5"
+clap = "2.33.3"
+
+[dev-dependencies]
+cargo-make = "0.32.14"
+cargo-semver = "1.0.0-alpha.3"
