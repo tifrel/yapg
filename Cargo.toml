@@ -5,6 +5,7 @@ version = "0.1.0"
 authors = ["tillyboy <github.com/tillyboy>"]
 license = "MIT"
 edition = "2018"
+repository = "https://github.com/tillyboy/yapg"
 
 # this is currently missing important options for grcov to work properly
 # see Makefile.toml for more

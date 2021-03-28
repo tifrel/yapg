@@ -1,5 +1,10 @@
 # Yet another password generator!
 
+[![docs.rs badge](https://docs.rs/yapg/badge.svg)](https://docs.rs/yapg/)
+[![Built with cargo-make](https://sagiegurari.github.io/cargo-make/assets/badges/cargo-make.svg)](https://sagiegurari.github.io/cargo-make)
+[![license](https://img.shields.io/github/license/tillyboy/yapg)](https://github.com/tillyboy/yapg/blob/master/LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/yapg)](https://crates.io/crates/yapg)
+
 Not because the world needed it, but for me to learn about the rust ecosystem.
 I have some ideas to improve it in the future, but having learned something
 about rust tooling, it's already done its job for me.
@@ -12,7 +17,7 @@ about rust tooling, it's already done its job for me.
 ## Possible future functionality (unlikely)
 
 - generating random passwords from syllables
-  - allowed syllables read from file
+  - allowed [syllables read from file](https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases)
   - configurable intercalation with special chars
   - configurable capitalization rules
 - generating random passphrases from words
@@ -35,3 +40,5 @@ about rust tooling, it's already done its job for me.
   - profiling with [`inferno`](https://crates.io/crates/inferno) and
     [`flamegraph`]()
 - integration tests for the binary
+- publish docs (docs.rs?)
+- link git repo

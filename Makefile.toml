@@ -77,7 +77,7 @@ dependencies = ["production_env", "production_build"]
 
 # ------------------------------- benchmarking ------------------------------- #
 [tasks.bench]
-clear=true
+clear = true
 # TODO:
 
 # -------------------------------- publishing -------------------------------- #
